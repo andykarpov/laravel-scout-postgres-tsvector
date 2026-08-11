@@ -14,8 +14,8 @@ jobs:
             fail-fast: true
             matrix:
                 php: [8.3, 8.4]
-                laravel: [^11, ^12]
-                scout: [^10]
+                laravel: [^11, ^12, ^13]
+                scout: [^11, ^12, ^13]
 
         name: Test PHP ${{ matrix.php }} - Laravel ${{ matrix.laravel }} - Scout ${{ matrix.scout }}
 

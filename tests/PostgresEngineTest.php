@@ -11,12 +11,11 @@ use Illuminate\Database\PostgresConnection;
 use Laravel\Scout\Builder;
 use Mockery;
 use ScoutEngines\Postgres\PostgresEngine;
+use PHPUnit\Framework\Attributes\Test;
 
 class PostgresEngineTest extends TestCase
 {
-    /**
-     * @test
-     */
+    #[Test]
     public function it_can_be_instantiated()
     {
         [$engine] = $this->getEngine();
@@ -24,9 +23,7 @@ class PostgresEngineTest extends TestCase
         $this->assertInstanceOf(PostgresEngine::class, $engine);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function update_adds_object_to_index()
     {
         [$engine, $db] = $this->getEngine();
@@ -55,9 +52,7 @@ class PostgresEngineTest extends TestCase
         $engine->update(Collection::make([new TestModel]));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function update_do_nothing_if_index_maintenance_turned_off_globally()
     {
         [$engine] = $this->getEngine(['maintain_index' => false]);
@@ -65,9 +60,7 @@ class PostgresEngineTest extends TestCase
         $this->assertNull($engine->update(Collection::make([new TestModel])));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function delete_removes_object_from_index()
     {
         [$engine, $db] = $this->getEngine();
@@ -86,9 +79,7 @@ class PostgresEngineTest extends TestCase
         $engine->delete(Collection::make([new TestModel]));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function delete_do_nothing_if_index_maintenance_turned_off_globally()
     {
         [$engine, $db] = $this->getEngine(['maintain_index' => false]);
@@ -98,9 +89,7 @@ class PostgresEngineTest extends TestCase
         $engine->delete(Collection::make([new TestModel]));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function flush_removes_all_objects_from_index()
     {
         [$engine, $db] = $this->getEngine();
@@ -115,9 +104,7 @@ class PostgresEngineTest extends TestCase
         $engine->flush(new TestModel);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function flush_does_nothing_if_index_maintenance_turned_off_globally()
     {
         [$engine, $db] = $this->getEngine(['maintain_index' => false]);
@@ -127,9 +114,7 @@ class PostgresEngineTest extends TestCase
         $engine->flush(new TestModel);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function search()
     {
         [$engine, $db] = $this->getEngine();
@@ -140,8 +125,8 @@ class PostgresEngineTest extends TestCase
 
         $table->shouldReceive('skip')->with($skip)->andReturnSelf()
             ->shouldReceive('limit')->with($limit)->andReturnSelf()
-            ->shouldReceive('where')->with('bar', 1)->andReturnSelf()
-            ->shouldReceive('where')->with('baz', 'qux')
+            ->shouldReceive('where')->with('bar', '=', 1)->andReturnSelf()
+            ->shouldReceive('where')->with('baz', '=', 'qux')
             ->shouldReceive('getBindings')->andReturn([null, 'foo', 1, 'qux']);
 
         $db->shouldReceive('select')
@@ -156,9 +141,7 @@ class PostgresEngineTest extends TestCase
         $engine->search($builder);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function search_with_order_by()
     {
         [$engine, $db] = $this->getEngine();
@@ -180,9 +163,7 @@ class PostgresEngineTest extends TestCase
         $engine->search($builder);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function search_with_queryCallback()
     {
         [$engine, $db] = $this->getEngine();
@@ -193,8 +174,8 @@ class PostgresEngineTest extends TestCase
 
         $table->shouldReceive('skip')->with($skip)->andReturnSelf()
             ->shouldReceive('limit')->with($limit)->andReturnSelf()
-            ->shouldReceive('where')->with('bar', 1)->andReturnSelf()
-            ->shouldReceive('where')->with('baz', 'qux')
+            ->shouldReceive('where')->with('bar', '=', 1)->andReturnSelf()
+            ->shouldReceive('where')->with('baz', '=', 'qux')
             ->shouldReceive('getBindings')->andReturn([null, 'foo', 1, 'qux']);
 
         $db->shouldReceive('select')
@@ -211,9 +192,7 @@ class PostgresEngineTest extends TestCase
         $engine->search($builder);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function search_with_whereIn()
     {
         [$engine, $db] = $this->getEngine();
@@ -235,9 +214,7 @@ class PostgresEngineTest extends TestCase
         $engine->search($builder);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function search_with_whereNotIn()
     {
         [$engine, $db] = $this->getEngine();
@@ -259,9 +236,7 @@ class PostgresEngineTest extends TestCase
         $engine->search($builder);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function search_with_global_config()
     {
         [$engine, $db] = $this->getEngine(['config' => 'simple']);
@@ -272,7 +247,7 @@ class PostgresEngineTest extends TestCase
 
         $table->shouldReceive('skip')->with($skip)->andReturnSelf()
             ->shouldReceive('limit')->with($limit)->andReturnSelf()
-            ->shouldReceive('where')->with('bar', 1)
+            ->shouldReceive('where')->with('bar', '=', 1)
             ->shouldReceive('getBindings')->andReturn(['simple', 'foo', 1]);
 
         $db->shouldReceive('select')->with(null, $table->getBindings())->once();
@@ -283,9 +258,7 @@ class PostgresEngineTest extends TestCase
         $engine->search($builder);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function search_with_model_config()
     {
         [$engine, $db] = $this->getEngine(['config' => 'simple']);
@@ -296,7 +269,7 @@ class PostgresEngineTest extends TestCase
 
         $table->shouldReceive('skip')->with($skip)->andReturnSelf()
             ->shouldReceive('limit')->with($limit)->andReturnSelf()
-            ->shouldReceive('where')->with('bar', 1)
+            ->shouldReceive('where')->with('bar', '=', 1)
             ->shouldReceive('getBindings')->andReturn(['english', 'foo', 1]);
 
         $db->shouldReceive('select')->with(null, $table->getBindings())->once();
@@ -310,9 +283,7 @@ class PostgresEngineTest extends TestCase
         $engine->search($builder);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function search_with_soft_deletes()
     {
         [$engine, $db] = $this->getEngine();
@@ -321,7 +292,7 @@ class PostgresEngineTest extends TestCase
 
         $table->shouldReceive('skip')->with(0)->andReturnSelf()
             ->shouldReceive('limit')->with(5)->andReturnSelf()
-            ->shouldReceive('where')->with('bar', 1)->andReturnSelf()
+            ->shouldReceive('where')->with('bar', '=', 1)->andReturnSelf()
             ->shouldReceive('whereNull')->with('deleted_at')
             ->shouldReceive('getBindings')->andReturn([null, 'foo', 1]);
 
@@ -333,9 +304,7 @@ class PostgresEngineTest extends TestCase
         $engine->search($builder);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function maps_results_to_models()
     {
         [$engine] = $this->getEngine();
@@ -354,9 +323,7 @@ class PostgresEngineTest extends TestCase
         $this->assertCount(1, $results);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function map_filters_out_no_longer_existing_models()
     {
         [$engine] = $this->getEngine();
@@ -380,9 +347,7 @@ class PostgresEngineTest extends TestCase
         $this->assertEquals(2, $models->first()->id);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function it_returns_total_count()
     {
         [$engine] = $this->getEngine();
@@ -394,9 +359,7 @@ class PostgresEngineTest extends TestCase
         $this->assertEquals(100, $count);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function map_ids_returns_right_key()
     {
         [$engine, $db] = $this->getEngine();
@@ -415,9 +378,7 @@ class PostgresEngineTest extends TestCase
         $this->assertEquals([1, 2], $ids->all());
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function create_index()
     {
         [$engine, $db] = $this->getEngine();
@@ -428,9 +389,7 @@ class PostgresEngineTest extends TestCase
         $engine->createIndex('bad_index');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function delete_index()
     {
         [$engine, $db] = $this->getEngine();

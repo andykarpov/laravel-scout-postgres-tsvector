@@ -371,10 +371,10 @@ class PostgresEngine extends Engine
         }
 
         // Apply where clauses that were set on the builder instance if any
-        foreach ($builder->wheres as $key => $value) {
-            if ($key == '__soft_deleted') {
+        foreach ($builder->wheres as $where) {
+            if ($where['field'] == '__soft_deleted') {
                 if ($this->usesSoftDeletes($builder->model)) {
-                    if ($value == 1) {
+                    if ($where['value'] == 1) {
                         $query->whereNotNull($builder->model->getDeletedAtColumn());
                     } else {
                         $query->whereNull($builder->model->getDeletedAtColumn());
@@ -383,7 +383,7 @@ class PostgresEngine extends Engine
 
                 continue;
             }
-            $query->where($key, $value);
+            $query->where($where['field'], $where['operator'], $where['value']);
         }
 
         // Apply whereIn clauses that were set on the builder instance if any
