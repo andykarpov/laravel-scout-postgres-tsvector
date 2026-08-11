@@ -12,12 +12,11 @@ use ScoutEngines\Postgres\TsQuery\WebSearchToTsQuery;
 
 /**
  * @template TModel of \Illuminate\Database\Eloquent\Model
- * @template TID of int|string
  */
 class PostgresEngineServiceProvider extends ServiceProvider
 {
     /**
-     * @return array<string, string>
+     * @return array<string, class-string>
      */
     public static function builderMacros(): array
     {
@@ -34,11 +33,13 @@ class PostgresEngineServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->app->make(EngineManager::class)->extend('pgsql', function () {
+        $this->app->make(EngineManager::class)->extend('pgsql', function ($app) {
             /** @var \Illuminate\Database\ConnectionResolverInterface $db */
-            $db = $this->app->get('db');
-            /** @var \Illuminate\Support\Facades\Config $config */
-            $config = $this->app->get('config');
+            $db = $app->make('db');
+            
+            /** @var \Illuminate\Contracts\Config\Repository $config */
+            $config = $app->make('config');
+            
             /** @var array<string, mixed> $pgScoutConfig */
             $pgScoutConfig = $config->get('scout.pgsql', []);
 
@@ -50,6 +51,10 @@ class PostgresEngineServiceProvider extends ServiceProvider
         }
     }
 
+    /**
+     * @param string $name
+     * @param class-string $class
+     */
     protected function registerBuilderMacro(string $name, string $class): void
     {
         if (! Builder::hasMacro($name)) {
@@ -64,3 +69,4 @@ class PostgresEngineServiceProvider extends ServiceProvider
         }
     }
 }
+
